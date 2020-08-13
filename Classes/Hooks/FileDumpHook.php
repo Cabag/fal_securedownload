@@ -40,7 +40,6 @@ use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
-use TYPO3\CMS\Frontend\Utility\EidUtility;
 
 /**
  * FileDumpHook
@@ -178,14 +177,14 @@ class FileDumpHook implements FileDumpEIDHookInterface
         $dumpFile = $file instanceof FileReference ? $file->getOriginalFile() : $file;
 
         if ($this->forceDownload($dumpFile->getExtension())) {
-            $this->dumpFileContents($dumpFile, true, $this->resumableDownload);
+            $this->streamFileContents($dumpFile, true, $this->resumableDownload);
         } elseif ($this->resumableDownload) {
-            $this->dumpFileContents($dumpFile, false, true);
+            $this->streamFileContents($dumpFile, false, true);
         }
     }
 
     /**
-     * Dump file contents
+     * Stream file contents
      *
      * @todo: find a nicer way to force the download. Other hooks are blocked by this.
      * @todo: Try to get the resumable option part of TYPO3 core itself
@@ -194,7 +193,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
      * @param bool $asDownload
      * @param bool $resumableDownload
      */
-    protected function dumpFileContents($file, $asDownload, $resumableDownload)
+    protected function streamFileContents($file, $asDownload, $resumableDownload)
     {
         $downloadName = $file->getProperty('download_name') ?: $file->getName();
 
@@ -205,7 +204,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
         }
 
         if (!$resumableDownload) {
-            $file->getStorage()->dumpFileContents($file, $asDownload, $downloadName);
+            $file->getStorage()->streamFile($file, $asDownload, $downloadName);
             exit;
         }
 
@@ -322,7 +321,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
     protected function initializeUserAuthentication()
     {
         if ($this->feUser === null) {
-            $this->feUser = EidUtility::initFeUser();
+            $this->feUser = $GLOBALS['TSFE']->fe_user->user;
             $this->feUser->fetchGroupData();
         }
     }

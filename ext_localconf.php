@@ -14,8 +14,7 @@ defined('TYPO3_MODE') or die();
 );
 
 // FE FileTree leaf open/close state dispatcher
-$GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['FalSecuredownloadFileTreeState'] =
-    'EXT:fal_securedownload/Resources/Public/Php/FileTreeState.php';
+$GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['FalSecuredownloadFileTreeState'] = \BeechIt\FalSecuredownload\Eid\FileTreeState::class.'::main';
 
 // FileDumpEID hook
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['FileDumpEID.php']['checkFileAccess']['FalSecuredownload'] =
