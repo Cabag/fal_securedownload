@@ -322,6 +322,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
     {
         if ($this->feUser === null) {
             $this->feUser = $GLOBALS['TSFE']->fe_user->user;
+
             $this->feUser->fetchGroupData();
         }
     }
